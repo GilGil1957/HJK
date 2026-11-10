@@ -31,15 +31,15 @@ Preços **fictícios** cadastrados: R$ 0,05 por cm² e mínimo de R$ 150,00.
 
 - Repositório `GilGil1957/HJK` (público), GitHub Pages na branch `main`, pasta raiz.
 - App Claude no GitHub com acesso só a `HJK` e `brasil-em-numeros` (nenhum repositório da Micropress).
-- Supabase: script `01_instalacao.sql` v1.1 executado; "Allow new users to sign up" **desativado**; administrador
-  provisório: gilmar@egga.com.br.
+- Supabase: script `01_instalacao.sql` v1.1 executado; "Allow new users to sign up" **desativado**; administradores:
+  hjk@hjk.ind.br (Josias) e gilmar@egga.com.br (Gilmar, mantido por enquanto).
 - `js/config.js`: URL do projeto e chave **publicável** (pública por definição; nenhuma chave secreta no repositório).
 - Capa do repositório (social preview) com o logo da HJK.
 
 ## Pendências antes da liberação comercial
 
 1. R7 e R11 no celular do Gilmar.
-2. Criar o usuário do Josias e torná-lo administrador (manual 02).
+2. ~~Criar o usuário do Josias~~ — feito (hjk@hjk.ind.br, administrador). Avaliar depois se o acesso do Gilmar continua.
 3. Trocar os preços fictícios pelos reais, definidos pelo Josias.
 4. Decisão do Josias sobre validade, impostos e frete no texto do orçamento.
 5. Migrar a hospedagem para Cloudflare Pages antes de divulgar aos clientes (termos do GitHub Pages; manual 08).
