@@ -7,8 +7,8 @@
 //  "secret" ou "service_role".
 // =====================================================================
 window.HJK_CONFIG = {
-  SUPABASE_URL: "https://SEU-PROJETO.supabase.co",
-  SUPABASE_CHAVE_PUBLICA: "COLE_AQUI_A_CHAVE_PUBLICA",
+  SUPABASE_URL: "https://qjgjmqoquvqbcoskepqb.supabase.co",
+  SUPABASE_CHAVE_PUBLICA: "sb_publishable_aSXkc_2zPqnrRgaoHDUw7g_FRsu0CXd",
 
   WHATSAPP_NUMERO: "5511971651268"
 };
