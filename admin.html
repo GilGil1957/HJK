@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <title>HJK — Administração</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="topo-interno">
+      <img class="logo" src="assets/logo-hjk.png" alt="HJK Galvanoplastia" id="logo">
+      <div class="logo-texto" id="logo-texto" hidden>HJK <span>GALVANOPLASTIA</span></div>
+    </div>
+  </header>
+
+  <main class="conteudo">
+    <h1>Administração — Orçamentos ENIG</h1>
+
+    <div id="aviso" class="aviso" role="alert" hidden></div>
+
+    <!-- Login -->
+    <form id="form-login" class="cartao" novalidate hidden>
+      <h2 class="secao-titulo">Entrar</h2>
+      <p class="secao-sub">Acesso exclusivo do administrador da HJK.</p>
+      <div class="campo">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" autocomplete="username" required>
+      </div>
+      <div class="campo">
+        <label for="senha">Senha</label>
+        <input id="senha" type="password" autocomplete="current-password" required>
+      </div>
+      <div class="acoes"><button type="submit" id="btn-entrar" class="btn btn-primario">Entrar</button></div>
+    </form>
+
+    <!-- Painel -->
+    <div id="painel" hidden>
+      <div class="barra-admin">
+        <p>Conectado como <strong id="usuario-email"></strong></p>
+        <button type="button" id="btn-sair" class="btn btn-secundario">Sair</button>
+      </div>
+
+      <section class="cartao">
+        <h2 class="secao-titulo">Preços</h2>
+        <p class="secao-sub">Valores usados em todos os novos orçamentos.</p>
+        <div class="atuais">
+          <div><span>Preço por cm² de ENIG</span><strong id="atual-preco">—</strong></div>
+          <div><span>Valor mínimo por pedido</span><strong id="atual-minimo">—</strong></div>
+        </div>
+        <p class="dica" id="atual-data"></p>
+
+        <form id="form-precos" novalidate>
+          <div class="grade-2">
+            <div class="campo">
+              <label for="novo-preco">Novo preço por cm² (R$)</label>
+              <input id="novo-preco" type="text" inputmode="decimal" placeholder="ex.: 0,05" autocomplete="off">
+              <p class="dica">Até 6 casas decimais.</p>
+            </div>
+            <div class="campo">
+              <label for="novo-minimo">Novo valor mínimo por pedido (R$)</label>
+              <input id="novo-minimo" type="text" inputmode="decimal" placeholder="ex.: 150,00" autocomplete="off">
+              <p class="dica">Aplicado uma única vez ao pedido completo.</p>
+            </div>
+          </div>
+          <div class="acoes"><button type="submit" id="btn-salvar" class="btn btn-primario">Salvar preços</button></div>
+        </form>
+      </section>
+
+      <section class="cartao">
+        <h2 class="secao-titulo">Conferir orçamento recebido</h2>
+        <p class="secao-sub">Cole a mensagem recebida pelo WhatsApp e clique em “Ler mensagem”, ou preencha os campos manualmente.</p>
+        <div class="campo">
+          <label for="msg-colada">Mensagem do WhatsApp</label>
+          <textarea id="msg-colada" placeholder="Cole aqui a mensagem completa…"></textarea>
+        </div>
+        <div class="acoes"><button type="button" id="btn-ler" class="btn btn-secundario">Ler mensagem</button></div>
+
+        <form id="form-verificar" novalidate>
+          <div class="grade-2">
+            <div class="campo">
+              <label for="v-id">Nº do orçamento</label>
+              <input id="v-id" type="text" placeholder="HJK-AAMMDD-XXXX-XXXXXXXXXX" autocomplete="off">
+            </div>
+            <div class="campo">
+              <label for="v-emitido">Emitido em</label>
+              <input id="v-emitido" type="text" placeholder="DD/MM/AAAA HH:MM" autocomplete="off">
+            </div>
+            <div class="campo"><label for="v-empresa">Empresa</label><input id="v-empresa" type="text" autocomplete="off"></div>
+            <div class="campo"><label for="v-referencia">Referência da placa <span class="opcional">(vazio se “não informada”)</span></label><input id="v-referencia" type="text" autocomplete="off"></div>
+            <div class="campo"><label for="v-largura">Largura (mm)</label><input id="v-largura" type="text" inputmode="decimal" autocomplete="off"></div>
+            <div class="campo"><label for="v-comprimento">Comprimento (mm)</label><input id="v-comprimento" type="text" inputmode="decimal" autocomplete="off"></div>
+            <div class="campo"><label for="v-quantidade">Quantidade</label><input id="v-quantidade" type="text" inputmode="numeric" autocomplete="off"></div>
+            <div class="campo"><label for="v-sfa">Surface Finish Area (%)</label><input id="v-sfa" type="text" inputmode="decimal" autocomplete="off"></div>
+            <div class="campo"><label for="v-valor">Valor do orçamento (R$)</label><input id="v-valor" type="text" inputmode="decimal" autocomplete="off"></div>
+          </div>
+          <div class="acoes"><button type="submit" id="btn-verificar" class="btn btn-primario">Verificar</button></div>
+        </form>
+        <div id="verif-resultado" class="verif-resultado" hidden></div>
+      </section>
+    </div>
+
+    <p><a href="index.html">← Página de orçamento</a></p>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/comum.js"></script>
+  <script src="js/logo.js"></script>
+  <script src="js/vendor/supabase-2.119.0.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

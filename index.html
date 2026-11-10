@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>HJK — Orçamento de Acabamento ENIG</title>
+  <meta name="description" content="Calcule o orçamento do acabamento ENIG da HJK Galvanoplastia e envie a solicitação pelo WhatsApp.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="topo-interno">
+      <img class="logo" src="assets/logo-hjk.png" alt="HJK Galvanoplastia" id="logo">
+      <div class="logo-texto" id="logo-texto" hidden>HJK <span>GALVANOPLASTIA</span></div>
+    </div>
+  </header>
+
+  <main class="conteudo">
+    <h1>HJK — Orçamento de Acabamento ENIG</h1>
+    <p class="intro">Preencha os dados da placa para calcular o valor do acabamento ENIG (Electroless Nickel Immersion Gold).</p>
+
+    <div id="aviso" class="aviso" role="alert" hidden></div>
+
+    <form id="form-orcamento" class="cartao" novalidate autocomplete="on">
+      <div class="campo">
+        <label for="empresa">Nome da empresa <span class="obrig" aria-hidden="true">*</span></label>
+        <input id="empresa" name="empresa" type="text" maxlength="120" required autocomplete="organization">
+        <p class="erro" id="erro-empresa" aria-live="polite"></p>
+      </div>
+
+      <div class="campo">
+        <label for="referencia">Referência ou código da placa <span class="opcional">(opcional)</span></label>
+        <input id="referencia" name="referencia" type="text" maxlength="60" autocomplete="off">
+        <p class="erro" id="erro-referencia" aria-live="polite"></p>
+      </div>
+
+      <div class="grade">
+        <div class="campo">
+          <label for="quantidade">Quantidade de placas <span class="obrig" aria-hidden="true">*</span></label>
+          <input id="quantidade" name="quantidade" type="text" inputmode="numeric" placeholder="ex.: 100" autocomplete="off">
+          <p class="erro" id="erro-quantidade" aria-live="polite"></p>
+        </div>
+        <div class="campo">
+          <label for="largura">Largura (mm) <span class="obrig" aria-hidden="true">*</span></label>
+          <input id="largura" name="largura" type="text" inputmode="decimal" placeholder="ex.: 100,0" autocomplete="off">
+          <p class="erro" id="erro-largura" aria-live="polite"></p>
+        </div>
+        <div class="campo">
+          <label for="comprimento">Comprimento (mm) <span class="obrig" aria-hidden="true">*</span></label>
+          <input id="comprimento" name="comprimento" type="text" inputmode="decimal" placeholder="ex.: 150,0" autocomplete="off">
+          <p class="erro" id="erro-comprimento" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="sfa">Surface Finish Area (%) <span class="obrig" aria-hidden="true">*</span></label>
+        <input id="sfa" name="sfa" type="text" inputmode="decimal" placeholder="ex.: 75,38" autocomplete="off" aria-describedby="dica-sfa">
+        <p class="dica" id="dica-sfa">Informe o percentual Surface Finish Area apresentado pelo software HQ DFM. Para placas de duas faces, o valor pode chegar a 200%.</p>
+        <p class="erro" id="erro-sfa" aria-live="polite"></p>
+      </div>
+
+      <div class="acoes">
+        <button type="submit" id="btn-calcular" class="btn btn-primario">Calcular orçamento</button>
+      </div>
+    </form>
+
+    <section id="resultado" class="cartao resultado" hidden aria-live="polite">
+      <h2>Orçamento</h2>
+      <p class="ident">Nº <strong id="r-id"></strong> · emitido em <span id="r-data"></span></p>
+
+      <div class="valor-destaque">
+        <span class="rotulo">Valor do orçamento</span>
+        <span class="valor" id="r-valor-final"></span>
+      </div>
+      <p class="aviso-minimo" id="r-minimo" hidden>O valor calculado ficou abaixo do valor mínimo por pedido; foi aplicado o valor mínimo.</p>
+
+      <dl class="detalhes">
+        <div><dt>Área de acabamento por placa</dt><dd id="r-area-placa"></dd></div>
+        <div><dt>Área total do pedido</dt><dd id="r-area-total"></dd></div>
+        <div><dt>Valor calculado do serviço</dt><dd id="r-valor-calculado"></dd></div>
+        <div><dt>Valor por placa</dt><dd id="r-unitario"></dd></div>
+      </dl>
+
+      <div class="acoes acoes-resultado">
+        <a id="btn-whatsapp" class="btn btn-whatsapp" href="#" target="_blank" rel="noopener noreferrer">Confirmar pedido pelo WhatsApp</a>
+        <button type="button" id="btn-novo" class="btn btn-secundario">Novo orçamento</button>
+      </div>
+      <p class="nota">Ao clicar, o WhatsApp abrirá com a solicitação preenchida. <strong>Confira e toque em enviar</strong> para que a HJK receba o pedido.</p>
+    </section>
+  </main>
+
+  <footer class="rodape">HJK Galvanoplastia · WhatsApp (11) 97165-1268</footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/comum.js"></script>
+  <script src="js/logo.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
