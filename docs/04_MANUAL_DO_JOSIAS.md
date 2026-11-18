@@ -1,68 +1,79 @@
-# Manual do Josias — Administração dos Orçamentos ENIG
+# Manual do Josias — Administração dos Orçamentos ENIG (versão 2.0)
 
-## Entrar
+Endereço: **https://gilgil1957.github.io/HJK/admin.html**
 
-1. Abra o endereço da administração (termina em `/admin.html`) no computador ou no celular.
-2. Digite seu **e-mail** e sua **senha** e toque em **Entrar**.
-3. Para sair, toque em **Sair**. Fechar o navegador também encerra o acesso.
+## Entrar, sair e senha
 
-## Alterar os preços
+- Digite o **e-mail** e a **senha** e toque em **Entrar**. Fechar o navegador encerra o acesso.
+- **Alterar senha:** depois de entrar, toque em **Alterar senha**, digite a nova senha duas vezes (mínimo 10 caracteres)
+  e toque em **Salvar nova senha**.
+- **Esqueci minha senha:** na tela de entrada, toque em **Esqueci minha senha**, informe o e-mail e toque em
+  **Enviar link**. Abra o e-mail recebido, toque no link e crie a senha nova. O link vale por tempo limitado.
+  *(Requer o envio de e-mails configurado no Supabase — ver manual 01, item 1.7.)*
+- Se o navegador oferecer para **preencher a senha automaticamente**, confira se é a senha certa.
 
-No quadro **Preços** aparecem os valores em uso:
+## Como o preço é calculado
 
-- **Preço por cm² de ENIG (R$)**: por exemplo `0,05`. Aceita até 6 casas decimais (`0,0485`).
-- **Valor mínimo por pedido (R$)**: por exemplo `150,00`. É cobrado uma única vez no pedido inteiro,
-  quando o valor calculado for menor que ele.
+1. **Área ENIG** = largura × comprimento × quantidade × Surface Finish Area ÷ 10.000 (cm²).
+2. **Sal de ouro (g)** = área × camada ÷ 10.000 × densidade × fator ouro→sal.
+3. **Químicos** = preço × consumo × sal de ouro, para cada material.
+   - “**Acompanha o ouro**”: usa a camada pedida pelo cliente (normalmente só o aurocianeto).
+   - “**Acompanha a área**”: usa a camada de referência — muda só com a área.
+   - **Água** e **Energia**: percentual do custo da Parte A.
+4. **Painéis** = área bruta das placas ÷ área do painel padrão, arredondado para cima.
+5. **Horas** = painéis ÷ painéis por hora + horas adicionais, arredondado para cima. **Mão de obra** = horas × valor da hora.
+6. **Custo** = químicos + mão de obra + custo fixo.
+7. **Preço** = custo × (1 + margem) ÷ (1 − tributos). Tirando os tributos do preço, sobra o custo com a margem.
+8. **Valor final** = o maior entre o preço e o valor mínimo por pedido (0 = sem mínimo).
 
-Para mudar:
+## Alterar preços e parâmetros
 
-1. Preencha **os dois campos**, "Novo preço por cm²" e "Novo valor mínimo". Pode usar vírgula ou ponto.
-2. Toque em **Salvar preços**.
-3. A mensagem verde confirma, e o quadro passa a mostrar os novos valores e a data da alteração.
+No quadro **Preços e parâmetros**:
 
-A mudança vale **imediatamente** para os próximos orçamentos. Os orçamentos já enviados continuam
-válidos com o valor original.
+| Grupo | O que tem |
+|---|---|
+| Materiais e químicos | Preço, consumo (por grama de sal de ouro) e “acompanha o ouro / a área” de cada material; % da Parte A para Água e Energia |
+| Produção e mão de obra | Valor da hora, painéis por hora, horas adicionais, tamanho do painel padrão, custo fixo |
+| Comercial | Margem sobre o custo, tributos, valor mínimo por pedido |
+| Camada de ouro | Mínima, padrão (já preenchida para o cliente) e máxima aceitas |
+| Fatores técnicos | Densidade do ouro, fator ouro→sal, camada de referência |
 
-Enquanto os preços não forem cadastrados pela primeira vez, os clientes veem
-"serviço ainda não disponível" e não conseguem gerar orçamentos.
+1. Altere os campos desejados (vírgula ou ponto; **não use ponto de milhar**: escreva 1500, não 1.500).
+2. Toque em **Salvar alterações**. A mensagem verde informa quantos itens mudaram.
+3. Se algum valor estiver fora do permitido, **nada é salvo** e a mensagem explica o motivo.
+4. **Desfazer** descarta o que ainda não foi salvo.
 
-## Conferir um orçamento recebido pelo WhatsApp
+As alterações valem **na hora** para os próximos orçamentos. Orçamentos já enviados continuam válidos.
 
-Todo orçamento traz um número como **HJK-261110-7B44-98F53289EC**:
+> Os valores iniciais do sistema são **fictícios**. Antes de liberar aos clientes, digite os valores reais da planilha.
 
-- `261110` é a data de emissão (ano 26, mês 11, dia 10).
-- Os últimos 10 caracteres são um **código de verificação** calculado pelo servidor.
+## Simulador
 
-O código cobre **todos** os dados da mensagem: empresa, referência da placa, data e hora de emissão,
-medidas, quantidade, percentual e valor. Se qualquer um deles for alterado, o código deixa de conferir.
+No quadro **Simulador de orçamento**, informe uma placa e toque em **Simular**. Aparece a composição completa:
+cada químico, mão de obra (painéis e horas), custo fixo, custo total, margem, tributos e valor final — igual à
+planilha. Use para conferir os valores depois de alterar preços. O simulador aceita camadas fora da faixa do
+cliente, mas avisa.
 
-Para conferir:
+## Conferir um orçamento recebido (WhatsApp ou e-mail)
 
-1. No WhatsApp, copie a mensagem inteira do cliente.
-2. Na administração, em **Conferir orçamento recebido**, cole no campo "Mensagem do WhatsApp".
-3. Toque em **Ler mensagem**. Os campos (número, data e hora, empresa, referência, medidas, quantidade,
-   percentual e valor) são preenchidos sozinhos. Se precisar digitar à mão, copie exatamente como está
-   na mensagem. Se a referência aparecer como "não informada", deixe o campo vazio.
-4. Toque em **Verificar**.
+O número do orçamento (ex.: **HJK-261118-7B44-98F53289EC**) traz a data e um código de verificação que cobre
+**todos** os dados: empresa, referência, data e hora, medidas, quantidade, percentual, **camada de ouro** e valor.
 
-Resultados:
+1. Copie a mensagem inteira do cliente (WhatsApp ou e-mail).
+2. Cole em **Mensagem recebida** e toque em **Ler mensagem**.
+3. Toque em **Verificar**:
+   - ✔ **Autêntico** — exatamente o que o sistema calculou.
+   - ✖ **Não confere** — algo foi alterado ou digitado errado; confira com o cliente.
 
-- ✔ **Orçamento autêntico**: os dados e o valor são exatamente os calculados pelo sistema.
-- ✖ **Orçamento não confere**: algo foi alterado ou digitado errado. Confira com o cliente.
+Também aparece o **valor com os preços atuais**. Orçamentos emitidos antes da versão 2.0 não conferem
+(o código mudou).
 
-O resultado também mostra o **valor com os preços atuais**, útil quando os preços mudaram
-depois que o cliente fez o orçamento.
-
-> O pedido só deve ser considerado recebido quando a mensagem do cliente chega de fato no WhatsApp.
-> O cliente pode abrir o WhatsApp e desistir de enviar.
+> O pedido só está recebido quando a mensagem do cliente chega de fato. Abrir o WhatsApp ou o e-mail não basta.
 
 ## Dúvidas comuns
 
-**Esqueci a senha.** Peça ao Gilmar para redefinir no painel do Supabase.
-
-**A página diz que não foi possível conectar.** No plano gratuito, o servidor entra em pausa depois de
-7 dias sem nenhum acesso. Peça ao Gilmar para reativar (Supabase → projeto → **Restore**). Leva poucos
-minutos e nenhum dado se perde.
-
-**Um cliente diz que a página pediu para aguardar.** Existe um limite de consultas seguidas para impedir
-robôs: 10 por minuto por pessoa e 120 por minuto no site todo. Basta esperar um ou dois minutos.
+- **A página diz que não foi possível conectar:** o Supabase gratuito pausa após 7 dias sem acesso. Peça ao Gilmar
+  para reativar (Supabase → projeto → Restore).
+- **Cliente diz que a página pediu para aguardar:** limite de 10 consultas por minuto por pessoa contra robôs.
+- **Cliente não consegue abrir o e-mail pelo botão:** o botão usa o programa de e-mail do aparelho dele. A página
+  mostra o endereço da HJK para envio manual com o número do orçamento.

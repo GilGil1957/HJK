@@ -35,7 +35,7 @@
     <!-- Login -->
     <form id="form-login" class="cartao" novalidate hidden>
       <h2 class="secao-titulo">Entrar</h2>
-      <p class="secao-sub">Acesso exclusivo do administrador da HJK.</p>
+      <p class="secao-sub">Acesso exclusivo dos administradores da HJK.</p>
       <div class="campo">
         <label for="email">E-mail</label>
         <input id="email" type="email" autocomplete="username" required>
@@ -45,46 +45,84 @@
         <input id="senha" type="password" autocomplete="current-password" required>
       </div>
       <div class="acoes"><button type="submit" id="btn-entrar" class="btn btn-primario">Entrar</button></div>
+      <p><button type="button" id="btn-esqueci" class="link-acao">Esqueci minha senha</button></p>
+    </form>
+
+    <!-- Esqueci minha senha -->
+    <form id="form-esqueci" class="cartao" novalidate hidden>
+      <h2 class="secao-titulo">Recuperar senha</h2>
+      <p class="secao-sub">Informe o e-mail de administrador. Você receberá um link para criar uma senha nova.</p>
+      <div class="campo">
+        <label for="email-recuperar">E-mail</label>
+        <input id="email-recuperar" type="email" autocomplete="username" required>
+      </div>
+      <div class="acoes">
+        <button type="submit" id="btn-enviar-link" class="btn btn-primario">Enviar link</button>
+        <button type="button" id="btn-voltar-login" class="btn btn-secundario">Voltar</button>
+      </div>
+    </form>
+
+    <!-- Nova senha (recuperação ou alteração) -->
+    <form id="form-nova-senha" class="cartao" novalidate hidden>
+      <h2 class="secao-titulo">Criar nova senha</h2>
+      <p class="secao-sub">Use pelo menos 10 caracteres, misturando letras, números e símbolos.</p>
+      <div class="campo">
+        <label for="nova-senha">Nova senha</label>
+        <input id="nova-senha" type="password" autocomplete="new-password" required>
+      </div>
+      <div class="campo">
+        <label for="nova-senha-2">Repita a nova senha</label>
+        <input id="nova-senha-2" type="password" autocomplete="new-password" required>
+      </div>
+      <div class="acoes">
+        <button type="submit" id="btn-salvar-senha" class="btn btn-primario">Salvar nova senha</button>
+        <button type="button" id="btn-cancelar-senha" class="btn btn-secundario">Cancelar</button>
+      </div>
     </form>
 
     <!-- Painel -->
     <div id="painel" hidden>
       <div class="barra-admin">
         <p>Conectado como <strong id="usuario-email"></strong></p>
-        <button type="button" id="btn-sair" class="btn btn-secundario">Sair</button>
+        <div class="acoes">
+          <button type="button" id="btn-alterar-senha" class="btn btn-secundario">Alterar senha</button>
+          <button type="button" id="btn-sair" class="btn btn-secundario">Sair</button>
+        </div>
       </div>
 
       <section class="cartao">
-        <h2 class="secao-titulo">Preços</h2>
-        <p class="secao-sub">Valores usados em todos os novos orçamentos.</p>
-        <div class="atuais">
-          <div><span>Preço por cm² de ENIG</span><strong id="atual-preco">—</strong></div>
-          <div><span>Valor mínimo por pedido</span><strong id="atual-minimo">—</strong></div>
-        </div>
-        <p class="dica" id="atual-data"></p>
-
-        <form id="form-precos" novalidate>
-          <div class="grade-2">
-            <div class="campo">
-              <label for="novo-preco">Novo preço por cm² (R$)</label>
-              <input id="novo-preco" type="text" inputmode="decimal" placeholder="ex.: 0,05" autocomplete="off">
-              <p class="dica">Até 6 casas decimais.</p>
-            </div>
-            <div class="campo">
-              <label for="novo-minimo">Novo valor mínimo por pedido (R$)</label>
-              <input id="novo-minimo" type="text" inputmode="decimal" placeholder="ex.: 150,00" autocomplete="off">
-              <p class="dica">Aplicado uma única vez ao pedido completo.</p>
-            </div>
+        <h2 class="secao-titulo">Preços e parâmetros</h2>
+        <p class="secao-sub">Valores usados em todos os novos orçamentos. <span id="config-data"></span></p>
+        <form id="form-config" novalidate>
+          <div id="config"></div>
+          <div class="barra-salvar acoes">
+            <button type="submit" id="btn-salvar-config" class="btn btn-primario">Salvar alterações</button>
+            <button type="button" id="btn-desfazer" class="btn btn-secundario">Desfazer</button>
           </div>
-          <div class="acoes"><button type="submit" id="btn-salvar" class="btn btn-primario">Salvar preços</button></div>
         </form>
       </section>
 
       <section class="cartao">
+        <h2 class="secao-titulo">Simulador de orçamento</h2>
+        <p class="secao-sub">Mostra a composição completa do custo e do preço. Visível só na administração.</p>
+        <form id="form-simular" novalidate>
+          <div class="grade-3">
+            <div class="campo"><label for="s-largura">Largura (mm)</label><input id="s-largura" type="text" inputmode="decimal" value="100" autocomplete="off"></div>
+            <div class="campo"><label for="s-comprimento">Comprimento (mm)</label><input id="s-comprimento" type="text" inputmode="decimal" value="100" autocomplete="off"></div>
+            <div class="campo"><label for="s-quantidade">Quantidade</label><input id="s-quantidade" type="text" inputmode="numeric" value="100" autocomplete="off"></div>
+            <div class="campo"><label for="s-sfa">Surface Finish Area (%)</label><input id="s-sfa" type="text" inputmode="decimal" value="75,38" autocomplete="off"></div>
+            <div class="campo"><label for="s-camada">Camada de ouro (µm)</label><input id="s-camada" type="text" inputmode="decimal" value="0,09" autocomplete="off"></div>
+          </div>
+          <div class="acoes"><button type="submit" id="btn-simular" class="btn btn-primario">Simular</button></div>
+        </form>
+        <div id="sim-resultado" hidden></div>
+      </section>
+
+      <section class="cartao">
         <h2 class="secao-titulo">Conferir orçamento recebido</h2>
-        <p class="secao-sub">Cole a mensagem recebida pelo WhatsApp e clique em “Ler mensagem”, ou preencha os campos manualmente.</p>
+        <p class="secao-sub">Cole a mensagem recebida pelo WhatsApp ou por e-mail e clique em “Ler mensagem”, ou preencha os campos manualmente.</p>
         <div class="campo">
-          <label for="msg-colada">Mensagem do WhatsApp</label>
+          <label for="msg-colada">Mensagem recebida</label>
           <textarea id="msg-colada" placeholder="Cole aqui a mensagem completa…"></textarea>
         </div>
         <div class="acoes"><button type="button" id="btn-ler" class="btn btn-secundario">Ler mensagem</button></div>
@@ -105,6 +143,7 @@
             <div class="campo"><label for="v-comprimento">Comprimento (mm)</label><input id="v-comprimento" type="text" inputmode="decimal" autocomplete="off"></div>
             <div class="campo"><label for="v-quantidade">Quantidade</label><input id="v-quantidade" type="text" inputmode="numeric" autocomplete="off"></div>
             <div class="campo"><label for="v-sfa">Surface Finish Area (%)</label><input id="v-sfa" type="text" inputmode="decimal" autocomplete="off"></div>
+            <div class="campo"><label for="v-camada">Camada de ouro (µm)</label><input id="v-camada" type="text" inputmode="decimal" autocomplete="off"></div>
             <div class="campo"><label for="v-valor">Valor do orçamento (R$)</label><input id="v-valor" type="text" inputmode="decimal" autocomplete="off"></div>
           </div>
           <div class="acoes"><button type="submit" id="btn-verificar" class="btn btn-primario">Verificar</button></div>

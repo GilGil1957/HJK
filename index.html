@@ -76,6 +76,13 @@
         <p class="erro" id="erro-sfa" aria-live="polite"></p>
       </div>
 
+      <div class="campo">
+        <label for="camada">Camada de ouro (µm) <span class="obrig" aria-hidden="true">*</span></label>
+        <input id="camada" name="camada" type="text" inputmode="decimal" value="0,09" autocomplete="off" aria-describedby="dica-camada">
+        <p class="dica" id="dica-camada">Espessura desejada da camada de ouro. Padrão: 0,09 µm.</p>
+        <p class="erro" id="erro-camada" aria-live="polite"></p>
+      </div>
+
       <div class="acoes">
         <button type="submit" id="btn-calcular" class="btn btn-primario">Calcular orçamento</button>
       </div>
@@ -94,15 +101,18 @@
       <dl class="detalhes">
         <div><dt>Área de acabamento por placa</dt><dd id="r-area-placa"></dd></div>
         <div><dt>Área total do pedido</dt><dd id="r-area-total"></dd></div>
+        <div><dt>Camada de ouro</dt><dd id="r-camada"></dd></div>
         <div><dt>Valor calculado do serviço</dt><dd id="r-valor-calculado"></dd></div>
         <div><dt>Valor por placa</dt><dd id="r-unitario"></dd></div>
       </dl>
 
       <div class="acoes acoes-resultado">
         <a id="btn-whatsapp" class="btn btn-whatsapp" href="#" target="_blank" rel="noopener noreferrer">Confirmar pedido pelo WhatsApp</a>
+        <a id="btn-email" class="btn btn-email" href="#">Confirmar pedido por e-mail</a>
         <button type="button" id="btn-novo" class="btn btn-secundario">Novo orçamento</button>
       </div>
-      <p class="nota">Ao clicar, o WhatsApp abrirá com a solicitação preenchida. <strong>Confira e toque em enviar</strong> para que a HJK receba o pedido.</p>
+      <p class="nota">Ao clicar, o WhatsApp ou o seu programa de e-mail abrirá com a solicitação preenchida. <strong>Confira e envie</strong> para que a HJK receba o pedido.</p>
+      <p class="nota" id="nota-email">Se o e-mail não abrir, envie a solicitação para <a id="link-email-texto" href="#"></a> com o número do orçamento.</p>
     </section>
   </main>
 

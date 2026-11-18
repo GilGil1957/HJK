@@ -55,7 +55,8 @@
   }
 
   // Valida o formulário. Devolve { ok, erros: {campo: msg}, dados }.
-  function validarFormulario(f) {
+  // limites = { camada_min, camada_max } (vindos do servidor); opcional.
+  function validarFormulario(f, limites) {
     var erros = {};
     var empresa = String(f.empresa || "").trim();
     var referencia = String(f.referencia || "").trim();
@@ -63,6 +64,9 @@
     var comprimento = lerDecimal(f.comprimento);
     var quantidade = lerInteiro(f.quantidade);
     var sfa = lerDecimal(f.sfa);
+    var camada = lerDecimal(f.camada);
+    var cMin = limites && limites.camada_min != null ? Number(limites.camada_min) : 0.01;
+    var cMax = limites && limites.camada_max != null ? Number(limites.camada_max) : 1;
 
     if (!empresa) erros.empresa = "Informe o nome da empresa.";
     else if (empresa.length > 120) erros.empresa = "Use no máximo 120 caracteres.";
@@ -84,11 +88,17 @@
     else if (sfa <= 0 || sfa > 200) erros.sfa = "Deve ser maior que 0% e no máximo 200%.";
     else if (casasDecimais(sfa) > 2) erros.sfa = "Use no máximo 2 casas decimais.";
 
+    if (String(f.camada || "").trim() === "") erros.camada = "Informe a camada de ouro desejada.";
+    else if (isNaN(camada)) erros.camada = "Número inválido. Exemplo: 0,09.";
+    else if (camada < cMin - 1e-9 || camada > cMax + 1e-9)
+      erros.camada = "Deve estar entre " + numero(cMin, 2, 3) + " e " + numero(cMax, 2, 3) + " µm.";
+    else if (casasDecimais(camada) > 3) erros.camada = "Use no máximo 3 casas decimais.";
+
     return {
       ok: Object.keys(erros).length === 0,
       erros: erros,
       dados: { empresa: empresa, referencia: referencia, largura: largura,
-               comprimento: comprimento, quantidade: quantidade, sfa: sfa }
+               comprimento: comprimento, quantidade: quantidade, sfa: sfa, camada: camada }
     };
   }
 
@@ -107,6 +117,7 @@
       "Quantidade: " + numero(r.quantidade, 0, 0),
       "Dimensões: " + numero(r.largura) + " × " + numero(r.comprimento) + " mm",
       "Surface Finish Area (HQ DFM): " + numero(r.sfa) + "%",
+      "Camada de ouro: " + numero(r.camada, 2, 3) + " µm",
       "Área total ENIG: " + numero(r.area_total, 2, 2) + " cm²",
       "Valor do orçamento: " + moeda(r.valor_final)
     ];
@@ -117,6 +128,16 @@
 
   function linkWhatsApp(numeroTel, mensagem) {
     return "https://wa.me/" + numeroTel + "?text=" + encodeURIComponent(mensagem);
+  }
+
+  // Mesmo texto, para e-mail (sem os asteriscos de negrito do WhatsApp).
+  function assuntoEmail(r) {
+    return "HJK — Solicitação de ENIG — Orçamento " + r.id;
+  }
+  function linkEmail(destino, r) {
+    var corpo = montarMensagem(r).replace(/\*/g, "");
+    return "mailto:" + destino + "?subject=" + encodeURIComponent(assuntoEmail(r)) +
+           "&body=" + encodeURIComponent(corpo.replace(/\n/g, "\r\n"));
   }
 
   // Lê uma mensagem colada do WhatsApp e extrai os dados para conferência.
@@ -134,13 +155,15 @@
       largura: dim ? dim[1] : "",
       comprimento: dim ? dim[2] : "",
       sfa: achar(/Surface Finish Area[^:]*:\s*([\d.,]+)/),
+      camada: achar(/Camada de ouro:\s*([\d.,]+)/),
       valor: achar(/Valor do or[çc]amento:\s*R\$\s*([\d.,]+)/)
     };
   }
 
   var api = { lerDecimal: lerDecimal, lerInteiro: lerInteiro, moeda: moeda, numero: numero,
               validarFormulario: validarFormulario, montarMensagem: montarMensagem,
-              linkWhatsApp: linkWhatsApp, extrairDaMensagem: extrairDaMensagem };
+              linkWhatsApp: linkWhatsApp, linkEmail: linkEmail, assuntoEmail: assuntoEmail,
+              extrairDaMensagem: extrairDaMensagem };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else raiz.HJK = api;
 })(typeof window !== "undefined" ? window : this);

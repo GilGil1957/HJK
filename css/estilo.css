@@ -133,6 +133,8 @@ input[aria-invalid="true"] { border-color: var(--erro); background: #fffafa; }
 .btn-secundario:hover { background: var(--fundo); }
 .btn-whatsapp { background: var(--whatsapp); color: var(--branco); }
 .btn-whatsapp:hover { filter: brightness(.95); }
+.btn-email { background: var(--azul); color: var(--branco); }
+.btn-email:hover { filter: brightness(.95); }
 .btn-link { background: none; border: none; color: var(--prata); padding: 6px 0; min-height: 0; font-weight: 600; }
 
 /* Avisos */
@@ -203,3 +205,26 @@ input[aria-invalid="true"] { border-color: var(--erro); background: #fffafa; }
 
 #atual-data { margin: 0 0 18px; }
 #form-verificar { margin-top: 18px; }
+
+/* Administração v2 */
+.grupo-titulo { margin: 18px 0 8px; font-size: 1rem; color: var(--marinho); border-bottom: 1px solid #e3e8ee; padding-bottom: 4px; }
+.tabela-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table.tabela { width: 100%; border-collapse: collapse; font-size: .92rem; }
+table.tabela th, table.tabela td { padding: 7px 6px; border-bottom: 1px solid #edf1f5; text-align: left; vertical-align: middle; }
+table.tabela th { color: var(--texto-suave); font-weight: 600; font-size: .82rem; white-space: nowrap; }
+table.tabela td.num, table.tabela th.num { text-align: right; white-space: nowrap; }
+table.tabela input, table.tabela select { padding: 7px 8px; font-size: 15px; min-width: 84px; }
+table.tabela select { width: auto; font: inherit; border: 1px solid #b9c4d0; border-radius: 8px; background: #fff; }
+table.tabela tr.total td { font-weight: 700; border-top: 2px solid #d5dde6; }
+table.tabela tr.destaque td { font-weight: 800; color: var(--marinho); font-size: 1rem; }
+.grade-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 14px; }
+.campo .unid { color: var(--texto-suave); font-weight: 400; }
+.link-acao { background: none; border: 0; color: var(--azul); font: inherit; font-size: .92rem; cursor: pointer; padding: 6px 0; text-decoration: underline; }
+.barra-salvar { position: sticky; bottom: 0; background: rgba(255,255,255,.96); padding: 10px 0 4px; border-top: 1px solid #e3e8ee; margin-top: 12px; }
+@media (max-width: 640px) { .grade-3 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px) {
+  .barra-salvar { flex-wrap: nowrap; }
+  .barra-salvar .btn { width: auto; flex: 1; min-height: 44px; padding: 10px 12px; }
+  .barra-admin .acoes { width: 100%; flex-wrap: nowrap; }
+  .barra-admin .acoes .btn { flex: 1; }
+}

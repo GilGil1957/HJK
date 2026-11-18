@@ -10,5 +10,6 @@ window.HJK_CONFIG = {
   SUPABASE_URL: "https://qjgjmqoquvqbcoskepqb.supabase.co",
   SUPABASE_CHAVE_PUBLICA: "sb_publishable_aSXkc_2zPqnrRgaoHDUw7g_FRsu0CXd",
 
-  WHATSAPP_NUMERO: "5511971651268"
+  WHATSAPP_NUMERO: "5511971651268",
+  EMAIL_PEDIDOS: "hjk@hjk.ind.br"
 };

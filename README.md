@@ -1,4 +1,4 @@
-# HJK Galvanoplastia — Orçamento de Acabamento ENIG  ·  versão 1.1
+# HJK Galvanoplastia — Orçamento de Acabamento ENIG  ·  versão 2.0
 
 Aplicativo web para os clientes da HJK calcularem o orçamento do acabamento ENIG
 e enviarem a solicitação pelo WhatsApp.
@@ -8,7 +8,10 @@ e enviarem a solicitação pelo WhatsApp.
 > **Versão de testes, ainda não publicada.** Nada foi publicado em nenhuma conta.
 > Para publicar, siga os manuais da pasta `docs/`, depois de aprovado por Gilmar.
 >
-> Novidades da 1.1 (resposta à revisão do Fernando): veja [RESPOSTA_REVISAO.md](RESPOSTA_REVISAO.md).
+> **Novidades da 2.0 (18/11/2026):** preço calculado pela estrutura de custos da planilha do Josias (químicos,
+> mão de obra por painel, custo fixo, margem e tributos por dentro); campo **camada de ouro** (padrão 0,09 µm,
+> faixa editável); administração com ~25 parâmetros e **simulador**; **recuperação e alteração de senha**;
+> confirmação do pedido também **por e-mail**. Detalhes em [CHANGELOG.md](CHANGELOG.md).
 
 ## Arquitetura
 
@@ -18,7 +21,8 @@ e enviarem a solicitação pelo WhatsApp.
 | Banco, cálculo e login | **Supabase**, plano Free (PostgreSQL + Auth) | gratuito |
 | Confirmação do pedido | Link `wa.me` para o WhatsApp oficial da HJK | gratuito |
 
-- O **preço por cm²** e o **valor mínimo** ficam num esquema privado do banco, sem acesso pela API pública.
+- Os **parâmetros de custo** (preços dos materiais, consumos, mão de obra, margem, tributos) ficam num esquema
+  privado do banco, sem acesso pela API pública; o cliente recebe só o valor final.
 - O **cálculo** é feito por uma função no servidor, que valida as entradas e devolve apenas os resultados.
 - **Limites contra consultas automatizadas:** 10 por minuto e 60 por hora por visitante (identificado pelo cabeçalho
   `cf-connecting-ip`, que o cliente não consegue forjar), mais 120 por minuto e 3.000 por dia no site todo.
@@ -52,7 +56,7 @@ docs/                   Manuais
 1. [docs/01_CONFIGURAR_SUPABASE.md](docs/01_CONFIGURAR_SUPABASE.md): criar o projeto gratuito e instalar o banco
 2. [docs/02_ACESSO_DO_JOSIAS.md](docs/02_ACESSO_DO_JOSIAS.md): criar o login de administrador
 3. [docs/03_PUBLICAR_NO_GITHUB.md](docs/03_PUBLICAR_NO_GITHUB.md): publicar na conta do Gilmar para testes (só após aprovação)
-4. [docs/04_MANUAL_DO_JOSIAS.md](docs/04_MANUAL_DO_JOSIAS.md): alterar os dois preços e conferir orçamentos
+4. [docs/04_MANUAL_DO_JOSIAS.md](docs/04_MANUAL_DO_JOSIAS.md): preços e parâmetros, simulador, senha e conferência
 5. [docs/05_LIMITES_CUSTOS_E_HOSPEDAGEM.md](docs/05_LIMITES_CUSTOS_E_HOSPEDAGEM.md): limites do plano gratuito e alternativa comercial
 6. [docs/06_TRANSFERIR_PARA_HJK.md](docs/06_TRANSFERIR_PARA_HJK.md): transferir tudo para contas da HJK
 7. [docs/07_LOGOMARCA.md](docs/07_LOGOMARCA.md): como a logomarca entra no site
@@ -71,13 +75,17 @@ python3 -m http.server 8000
 Abra `http://localhost:8000` (cliente) e `http://localhost:8000/admin.html` (administração).
 Abrir o arquivo com duplo clique não funciona, porque o navegador bloqueia as chamadas ao servidor.
 
-## Fórmula
+## Fórmula (versão 2.0)
 
 ```
-Área ENIG (cm²) = Largura (mm) × Comprimento (mm) × Quantidade × SFA (%) / 10.000
-Valor calculado = Área ENIG × Preço por cm²            (arredondado a 2 casas)
-Valor final     = MÁXIMO(Valor calculado; Valor mínimo por pedido)
+Área ENIG (cm²)  = Largura × Comprimento × Quantidade × SFA% / 10.000
+Sal de ouro (g)  = Área × Camada(µm)/10.000 × Densidade × Fator ouro→sal
+Químicos         = Σ Preço × Consumo × Sal  (ouro: camada pedida; área: camada de referência) + indexados
+Painéis          = ⌈Área bruta ÷ Área do painel padrão⌉
+Horas            = ⌈Painéis ÷ Painéis por hora + Horas adicionais⌉
+Custo            = Químicos + Horas × Valor da hora + Custo fixo
+Preço            = Custo × (1 + Margem) ÷ (1 − Tributos)
+Valor final      = MÁXIMO(Preço; Valor mínimo por pedido)
 ```
 
-O mínimo é aplicado uma única vez ao pedido completo. O SFA (Surface Finish Area do HQ DFM)
-já soma as duas faces, por isso aceita até 200% e não é multiplicado por fator algum.
+Todos os valores são editáveis na administração. Os valores do script SQL são **fictícios**.

@@ -35,3 +35,19 @@ Sem este passo, o usuário até consegue fazer login, mas recebe "sem permissão
 - A sessão do administrador termina ao fechar a aba ou o navegador.
 - A página `admin.html` é pública, mas sem um usuário administrador ela não mostra nem altera nada.
   A proteção está no servidor, não na página.
+
+
+## 2.5 Senha esquecida (versão 2.0)
+
+1. **Pelo próprio usuário:** em `admin.html`, **Esqueci minha senha** → e-mail com link → senha nova.
+   Requer o SMTP configurado (manual 01, item 1.7).
+2. **Logado:** botão **Alterar senha** no painel.
+3. **Pelo Gilmar (sem e-mail):** no SQL Editor, execute — digitando a senha nova **no lugar indicado, entre as
+   aspas** — e depois apague o comando do editor:
+
+```sql
+update auth.users
+   set encrypted_password = extensions.crypt('DIGITE_A_SENHA_NOVA_AQUI', extensions.gen_salt('bf')),
+       updated_at = now()
+ where email = 'hjk@hjk.ind.br';
+```

@@ -3,7 +3,8 @@
   "use strict";
   var CFG = window.HJK_CONFIG;
   var H = window.HJK;
-  var CAMPOS = ["empresa", "referencia", "quantidade", "largura", "comprimento", "sfa"];
+  var CAMPOS = ["empresa", "referencia", "quantidade", "largura", "comprimento", "sfa", "camada"];
+  var limites = null;   // limites públicos da camada (vêm do servidor)
 
   var $ = function (id) { return document.getElementById(id); };
   var form = $("form-orcamento");
@@ -62,9 +63,11 @@
     $("r-area-total").textContent = H.numero(r.area_total, 2, 2) + " cm²";
     $("r-valor-calculado").textContent = H.moeda(r.valor_calculado);
     $("r-valor-final").textContent = H.moeda(r.valor_final);
+    $("r-camada").textContent = H.numero(r.camada, 2, 3) + " µm";
     $("r-unitario").textContent = H.moeda(r.valor_unitario) + (r.quantidade > 1 ? " (aprox.)" : "");
     $("r-minimo").hidden = !r.minimo_aplicado;
     $("btn-whatsapp").href = H.linkWhatsApp(CFG.WHATSAPP_NUMERO, H.montarMensagem(r));
+    $("btn-email").href = H.linkEmail(CFG.EMAIL_PEDIDOS, r);
     resultado.hidden = false;
     ultimoCliente = cliente;
     resultado.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -78,7 +81,7 @@
 
     var valores = {};
     CAMPOS.forEach(function (c) { valores[c] = $(c).value; });
-    var v = H.validarFormulario(valores);
+    var v = H.validarFormulario(valores, limites);
     if (!v.ok) {
       Object.keys(v.erros).forEach(function (c) {
         $("erro-" + c).textContent = v.erros[c];
@@ -94,7 +97,7 @@
     rpc("calcular_orcamento", {
       p_empresa: v.dados.empresa, p_referencia: v.dados.referencia,
       p_largura: v.dados.largura, p_comprimento: v.dados.comprimento,
-      p_quantidade: v.dados.quantidade, p_sfa: v.dados.sfa
+      p_quantidade: v.dados.quantidade, p_sfa: v.dados.sfa, p_camada: v.dados.camada
     }).then(function (r) {
       if (versaoSolicitada !== versaoFormulario) return;
       if (r && r.ok) exibir(v.dados, r);
@@ -114,8 +117,13 @@
     $(c).addEventListener("input", esconderResultado);
   });
 
+  function camadaPadrao() {
+    $("camada").value = H.numero(limites && limites.camada_padrao != null ? limites.camada_padrao : 0.09, 2, 3);
+  }
+
   $("btn-novo").addEventListener("click", function () {
     form.reset();
+    camadaPadrao();
     limparErros();
     mostrarAviso("");
     esconderResultado();
@@ -123,9 +131,18 @@
     $("empresa").focus();
   });
 
-  // Verifica se o serviço está disponível (preços configurados).
-  rpc("servico_disponivel").then(function (disponivel) {
-    if (disponivel !== true) {
+  $("link-email-texto").textContent = CFG.EMAIL_PEDIDOS;
+  $("link-email-texto").href = "mailto:" + CFG.EMAIL_PEDIDOS;
+
+  // Disponibilidade do serviço e limites da camada de ouro.
+  rpc("dados_formulario").then(function (d) {
+    limites = d || null;
+    if (limites) {
+      camadaPadrao();
+      $("dica-camada").textContent = "Espessura desejada da camada de ouro, entre " + H.numero(limites.camada_min, 2, 3) +
+        " e " + H.numero(limites.camada_max, 2, 3) + " µm. Padrão: " + H.numero(limites.camada_padrao, 2, 3) + " µm.";
+    }
+    if (!d || d.disponivel !== true) {
       btnCalcular.disabled = true;
       mostrarAviso("O serviço de orçamento ainda não está disponível. Entre em contato com a HJK pelo WhatsApp.", "info");
     }

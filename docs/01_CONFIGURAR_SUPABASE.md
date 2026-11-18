@@ -46,14 +46,39 @@ Isso impede que qualquer pessoa crie uma conta no projeto.
 window.HJK_CONFIG = {
   SUPABASE_URL: "https://abcdxyz.supabase.co",
   SUPABASE_CHAVE_PUBLICA: "sb_publishable_xxxxxxxxxxxxxxxx",
-  WHATSAPP_NUMERO: "5511971651268"
+  WHATSAPP_NUMERO: "5511971651268",
+  EMAIL_PEDIDOS: "hjk@hjk.ind.br"     // destino do botão "Confirmar pedido por e-mail"
 };
 ```
 
 A chave pública pode ficar no site e no GitHub. Ela só dá acesso às funções liberadas pelo script.
 Os preços continuam protegidos.
 
-## 1.6 Próximo passo
+## 1.6 Endereços permitidos para a recuperação de senha
+
+**Authentication → URL Configuration**:
+- **Site URL:** o endereço da administração, ex.: `https://gilgil1957.github.io/HJK/admin.html`
+- **Redirect URLs:** adicione o mesmo endereço (e, no futuro, o endereço da Cloudflare Pages).
+
+Sem isso, o link do e-mail de recuperação leva a um endereço errado.
+
+## 1.7 Envio de e-mails (necessário para "Esqueci minha senha")
+
+O envio embutido do Supabase **só entrega a membros da equipe do projeto** e no máximo **2 e-mails por hora**.
+Para o Josias receber o e-mail de recuperação, configure um **SMTP próprio** em
+**Authentication → Emails → SMTP Settings** (ou **Project Settings → Authentication → SMTP**):
+
+| Opção | Custo | Observação |
+|---|---|---|
+| E-mail da própria HJK (`hjk.ind.br`) | já pago | Pedir ao provedor do e-mail: servidor SMTP, porta, usuário e senha |
+| Brevo (antigo Sendinblue) | grátis até 300 e-mails/dia | Criar conta e verificar o remetente |
+| Resend | grátis até 3.000 e-mails/mês | Exige verificar o domínio `hjk.ind.br` |
+
+Os dados do SMTP são digitados **diretamente no Supabase** por quem tiver as credenciais — nunca no chat nem no
+repositório. Enquanto o SMTP não estiver configurado, a senha pode ser redefinida pelo Gilmar no SQL Editor
+(manual 02) ou pelo próprio usuário logado em **Alterar senha**.
+
+## 1.8 Próximo passo
 
 Crie o acesso do Josias: [02_ACESSO_DO_JOSIAS.md](02_ACESSO_DO_JOSIAS.md).
-Enquanto ele não cadastrar os preços, a página do cliente mostra "serviço ainda não disponível".
+O sistema já nasce com valores **fictícios** de teste; o Josias digita os reais na administração.

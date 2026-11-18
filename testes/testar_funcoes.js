@@ -31,12 +31,14 @@ teste("Quantidade aceita só inteiros positivos", () => {
 });
 
 const valido = { empresa: "Eletrônica Teste Ltda", referencia: "PCB-01", quantidade: "100",
-                 largura: "100", comprimento: "100", sfa: "75,38" };
+                 largura: "100", comprimento: "100", sfa: "75,38", camada: "0,09" };
+const LIM = { camada_min: 0.03, camada_padrao: 0.09, camada_max: 0.10 };
 
 teste("Formulário válido passa", () => {
-  const v = H.validarFormulario(valido);
+  const v = H.validarFormulario(valido, LIM);
   assert.ok(v.ok, JSON.stringify(v.erros));
   assert.strictEqual(v.dados.sfa, 75.38);
+  assert.strictEqual(v.dados.camada, 0.09);
 });
 
 teste("Teste 9: campos vazios, negativos e fora do intervalo são recusados", () => {
@@ -46,18 +48,23 @@ teste("Teste 9: campos vazios, negativos e fora do intervalo são recusados", ()
     [{ quantidade: "2,5" }, "quantidade"], [{ largura: "" }, "largura"], [{ largura: "-10" }, "largura"],
     [{ largura: "0" }, "largura"], [{ comprimento: "1001" }, "comprimento"], [{ largura: "10,123" }, "largura"],
     [{ sfa: "" }, "sfa"], [{ sfa: "0" }, "sfa"], [{ sfa: "200,01" }, "sfa"], [{ sfa: "250" }, "sfa"],
-    [{ sfa: "-5" }, "sfa"], [{ referencia: "x".repeat(61) }, "referencia"]
+    [{ sfa: "-5" }, "sfa"], [{ referencia: "x".repeat(61) }, "referencia"],
+    [{ camada: "" }, "camada"], [{ camada: "0,02" }, "camada"], [{ camada: "0,11" }, "camada"],
+    [{ camada: "abc" }, "camada"], [{ camada: "0,0905" }, "camada"]
   ];
   for (const [alteracao, campo] of casos) {
-    const v = H.validarFormulario(Object.assign({}, valido, alteracao));
+    const v = H.validarFormulario(Object.assign({}, valido, alteracao), LIM);
     assert.ok(!v.ok && v.erros[campo], "não recusou " + JSON.stringify(alteracao));
   }
-  assert.ok(H.validarFormulario(Object.assign({}, valido, { sfa: "200" })).ok, "200% deveria ser aceito");
-  assert.ok(H.validarFormulario(Object.assign({}, valido, { referencia: "" })).ok, "referência é opcional");
+  assert.ok(H.validarFormulario(Object.assign({}, valido, { sfa: "200" }), LIM).ok, "200% deveria ser aceito");
+  assert.ok(H.validarFormulario(Object.assign({}, valido, { referencia: "" }), LIM).ok, "referência é opcional");
+  for (const k of ["0,03", "0.1", "0,10", "0,075"]) assert.ok(H.validarFormulario(Object.assign({}, valido, { camada: k }), LIM).ok, k);
+  assert.ok(H.validarFormulario(Object.assign({}, valido, { camada: "0,12" }), { camada_min: 0.03, camada_max: 0.125 }).ok,
+    "limite máximo editável deve ser respeitado");
 });
 
 const resp = { id: "HJK-261110-A3F9-7B1E40C2D9", emitido_em: "10/11/2026 13:05",
-               empresa: "Eletrônica Teste Ltda", referencia: "PCB-01", largura: 100, comprimento: 100,
+               empresa: "Eletrônica Teste Ltda", referencia: "PCB-01", camada: 0.09, largura: 100, comprimento: 100,
                quantidade: 100, sfa: 75.38, area_placa: 75.38, area_total: 7538, valor_calculado: 376.9,
                valor_final: 376.9, valor_unitario: 3.77, minimo_aplicado: false };
 
@@ -66,7 +73,7 @@ teste("Teste 10: mensagem do WhatsApp com todos os dados", () => {
   for (const trecho of ["*HJK GALVANOPLASTIA — SOLICITAÇÃO DE ENIG*", "Orçamento: HJK-261110-A3F9-7B1E40C2D9",
     "Emitido em: 10/11/2026 13:05", "Empresa: Eletrônica Teste Ltda", "Referência da placa: PCB-01",
     "Quantidade: 100", "Dimensões: 100 × 100 mm", "Surface Finish Area (HQ DFM): 75,38%",
-    "Área total ENIG: 7.538,00 cm²", "Valor do orçamento: R$ 376,90",
+    "Camada de ouro: 0,09 µm", "Área total ENIG: 7.538,00 cm²", "Valor do orçamento: R$ 376,90",
     "Solicitamos a execução do serviço conforme o orçamento apresentado."]) {
     assert.ok(m.includes(trecho), "faltou: " + trecho + "\n" + m);
   }
@@ -97,7 +104,7 @@ teste("Valor exibido e valor da mensagem usam a mesma formatação", () => {
 
 teste("Leitura da mensagem colada para conferência (ida e volta)", () => {
   const r2 = Object.assign({}, resp, { empresa: "Placas & Cia: Filial 2", referencia: "REF: A-7",
-    largura: 50.5, comprimento: 80.25, quantidade: 1500, sfa: 150.5, valor_final: 1234.56 });
+    largura: 50.5, comprimento: 80.25, quantidade: 1500, sfa: 150.5, camada: 0.075, valor_final: 1234.56 });
   const d = H.extrairDaMensagem(H.montarMensagem(r2));
   assert.strictEqual(d.id, resp.id);
   assert.strictEqual(d.emitido_em, "10/11/2026 13:05");
@@ -108,7 +115,20 @@ teste("Leitura da mensagem colada para conferência (ida e volta)", () => {
   assert.strictEqual(H.lerDecimal(d.comprimento), 80.25);
   assert.strictEqual(H.lerInteiro(d.quantidade), 1500);
   assert.strictEqual(H.lerDecimal(d.sfa), 150.5);
+  assert.strictEqual(H.lerDecimal(d.camada), 0.075);
   assert.strictEqual(H.lerDecimal(d.valor), 1234.56);
+});
+
+teste("E-mail: endereço da HJK, assunto com o nº e o mesmo texto da mensagem (sem asteriscos)", () => {
+  const url = H.linkEmail("hjk@hjk.ind.br", resp);
+  assert.ok(url.startsWith("mailto:hjk@hjk.ind.br?subject="));
+  const q = new URLSearchParams(url.split("?")[1]);
+  assert.strictEqual(q.get("subject"), "HJK — Solicitação de ENIG — Orçamento " + resp.id);
+  const corpo = q.get("body").replace(/\r\n/g, "\n");
+  assert.strictEqual(corpo, H.montarMensagem(resp).replace(/\*/g, ""));
+  assert.ok(!corpo.includes("*") && corpo.includes("Valor do orçamento: R$ 376,90") && corpo.includes("Camada de ouro: 0,09 µm"));
+  const d = H.extrairDaMensagem(corpo);
+  assert.strictEqual(d.id, resp.id); assert.strictEqual(d.camada, "0,09");
 });
 
 const ok = resultados.filter(r => r[0]).length;

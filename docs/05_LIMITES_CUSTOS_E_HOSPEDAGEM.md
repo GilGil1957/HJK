@@ -17,11 +17,12 @@
    conectar". Para reativar: painel do Supabase → projeto → **Restore project** (poucos minutos).
    Por decisão do Gilmar, **não foi implementada** a consulta automática que evitaria a pausa.
    Se ela se mostrar necessária, dá para incluir depois uma tarefa agendada gratuita.
-2. **Sem backup automático** no plano gratuito. O impacto é pequeno, porque o banco guarda só os dois
+2. **Sem backup automático** no plano gratuito. O impacto é pequeno, porque o banco guarda só os
    preços e o usuário do Josias. Recomendação: o Josias anota os preços em vigor.
 3. **Sem garantia de disponibilidade (SLA)** nos planos gratuitos.
 4. **Sigilo relativo dos preços.** Ninguém consegue ler nem alterar os parâmetros diretamente. Mesmo
-   assim, quem fizer orçamentos seguidos consegue **deduzir** o preço por cm² (valor ÷ área) e o
+   assim, quem fizer muitos orçamentos variando medidas e camada consegue **estimar** a estrutura de preço
+   (custo por área, efeito da camada) e o
    mínimo (valor de um pedido pequeno). Isso é inerente a qualquer calculadora pública. Os limites de
    consulta dificultam a coleta automatizada, mas não impedem uma dedução manual.
 5. **Limites contra robôs:** 10 consultas por minuto e 60 por hora por visitante, mais 120 por minuto e
@@ -39,6 +40,12 @@
      pode ser acrescentada depois, se for necessária.
 6. **E-mails do Supabase Auth** (redefinição de senha) têm limite baixo no plano gratuito. Como só
    existe um administrador, isso não afeta o uso normal.
+
+7. **E-mails de recuperação de senha** exigem SMTP próprio (o envio embutido só atende a equipe do projeto e
+   2 e-mails/hora). Há opções gratuitas — ver manual 01, item 1.7.
+8. **Botão de e-mail do orçamento** usa o programa de e-mail do aparelho do cliente (link `mailto:`), sem custo e
+   sem servidor de e-mail. Se o cliente não tiver um programa de e-mail configurado, a página mostra o endereço da
+   HJK para envio manual.
 
 ## 5.3 Custos futuros possíveis
 
